@@ -39,12 +39,15 @@ def fbp_port(port, node_label='node'):
     return doc
 
 
-def fbp_edge(outport, inport, graph_id, node_label='node'):
+def fbp_edge(outport, inport, graph_id, default_capacity, node_label='node'):
     connection = {
         'src': fbp_port(outport, node_label),
         'tgt': fbp_port(inport, node_label)
     }
     conn = inport._connection
+    cap = conn.capacity()
+    if cap !=default_capacity:
+        connection.update({'cap':conn.capacity()})
     # keyed on outport
     metadata = conn.metadata.get(outport, None)
     if metadata:
