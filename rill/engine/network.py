@@ -627,7 +627,7 @@ class Graph(object):
                         if outport.component.hidden:
                             continue
                         definition['connections'].append(
-                            fbp_edge(outport, inport, self.name, 'process'))
+                            fbp_edge(outport, inport, self.name, self.default_capacity, 'process'))
 
         for (name, inport) in self.inports.items():
             definition['inports'][name] = {
@@ -691,7 +691,10 @@ class Graph(object):
             else:
                 # connection
                 src = _port(connection['src'], 'out')
-                graph.connect(src, tgt)
+                if 'cap' in connection.keys():
+                    graph.connect(src, tgt, connection_capacity=connection['cap'])
+                else:
+                    graph.connect(src, tgt)
 
         for (name, inport) in definition['inports'].items():
             graph.export(_port(inport, 'in'), name)
