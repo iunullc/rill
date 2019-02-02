@@ -471,7 +471,7 @@ class Connection(BaseConnection):
             self.receiver.trace_locks("sender closed - unlock",
                                       port=self.inport)
 
-    def connect(self, inport, outport, capacity):
+    def connect(self, inport, outport, capacity, topics=['all']):
         """
         Connect an ``InputPort`` to an ``OutputPort``.
 
@@ -495,6 +495,11 @@ class Connection(BaseConnection):
         self.inport = inport
         self.outports.add(outport)
         outport._connections.append(self)
+        
+        for topic in topics:
+            if not topic in outport._topic_map.keys():
+                outport._topic_map[topic]=[]
+            outport._topic_map[topic].append(self)
 
     def is_closed(self):
         """

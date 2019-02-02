@@ -39,6 +39,7 @@ class OutputPort(Port, OutputInterface):
         self._sender_count = 0
         # type: List[rill.engine.inputport.Connection]
         self._connections = []
+        self._topic_map = {'all':[]}
 
     def open(self):
         for connection in self._connections:
@@ -80,7 +81,7 @@ class OutputPort(Port, OutputInterface):
     def is_null(self):
         return self.name == OUT_NULL
 
-    def send(self, packet):
+    def send(self, packet, topic='all'):
         """
         Send a packet to this Port.
 
@@ -131,9 +132,9 @@ class OutputPort(Port, OutputInterface):
         self.validate_packet_contents(packet.get_contents())
         self.sender.logger.debug("Sending packet: {}".format(packet),
                                  port=self)
-
         do_clone = len(self._connections) > 1
-        for connection in self._connections:
+
+        for connection in self._topic_map[topic]:
             p = packet.clone() if do_clone else packet
             if not connection.send(p, self):
                 # FIXME: would be good to check if all outports are closed and

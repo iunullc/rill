@@ -458,7 +458,7 @@ class Graph(object):
 
     @supports_listeners
     def connect(self, sender, receiver, connection_capacity=None,
-                count_packets=False, metadata=None):
+                count_packets=False, metadata=None, topics=['all']):
         """
         Connect an output port of one component to an input port of another.
 
@@ -481,7 +481,7 @@ class Graph(object):
 
         if inport._connection is None:
             inport._connection = Connection()
-        inport._connection.connect(inport, outport, connection_capacity)
+        inport._connection.connect(inport, outport, connection_capacity, topics)
 
         metadata = metadata or {}
         edge_metadata = inport._connection.metadata.setdefault(outport, {})
