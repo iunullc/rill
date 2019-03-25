@@ -133,21 +133,22 @@ class OutputPort(Port, OutputInterface):
         self.sender.logger.debug("Sending packet: {}".format(packet),
                                  port=self)
         do_clone = len(self._connections) > 1
-        for connection in self._topic_map[topic]:
-            p = packet.clone() if do_clone else packet
-            if not connection.send(p, self):
-                # FIXME: would be good to check if all outports are closed and
-                # terminate the component. otherwise, every component must be
-                # written to check is_closed() and break
-                self.component.drop(p)
-                if not connection.is_closed():
-                    # indicate that one sender has terminated
-                    connection.indicate_sender_closed()
-                self._sender_count -= 1
-                # raise FlowError("{}: Could not deliver packet to {}".format(
-                #     self._connection.get_name(), self.get_name()))
-            self.sender.logger.debug("Packet sent to {}", port=self,
-                                     args=[connection.inport])
+        if topic in self._topic_map.keys():
+            for connection in self._topic_map[topic]:
+                p = packet.clone() if do_clone else packet
+                if not connection.send(p, self):
+                    # FIXME: would be good to check if all outports are closed and
+                    # terminate the component. otherwise, every component must be
+                    # written to check is_closed() and break
+                    self.component.drop(p)
+                    if not connection.is_closed():
+                        # indicate that one sender has terminated
+                        connection.indicate_sender_closed()
+                    self._sender_count -= 1
+                    # raise FlowError("{}: Could not deliver packet to {}".format(
+                    #     self._connection.get_name(), self.get_name()))
+                self.sender.logger.debug("Packet sent to {}", port=self,
+                                         args=[connection.inport])
         return True
 
     def downstream_count(self):

@@ -496,7 +496,6 @@ class Connection(BaseConnection):
         self.inport = inport
         self.outports.add(outport)
         outport._connections.append(self)
-        
         for topic in topics:
             if not topic in outport._topic_map.keys():
                 outport._topic_map[topic]=[]
