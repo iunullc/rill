@@ -399,6 +399,7 @@ class Connection(BaseConnection):
         self.drop_oldest = False
         self.count_packets = False
         self.metadata = {}
+        self.topics=[]
 
     def __repr__(self):
         return '%s(%r)' % (self.__class__.__name__,
@@ -491,7 +492,7 @@ class Connection(BaseConnection):
                     "specification".format(self))
         else:
             self._queue = deque(maxlen=capacity)
-
+        self.topics=topics
         self.inport = inport
         self.outports.add(outport)
         outport._connections.append(self)

@@ -133,7 +133,6 @@ class OutputPort(Port, OutputInterface):
         self.sender.logger.debug("Sending packet: {}".format(packet),
                                  port=self)
         do_clone = len(self._connections) > 1
-
         for connection in self._topic_map[topic]:
             p = packet.clone() if do_clone else packet
             if not connection.send(p, self):

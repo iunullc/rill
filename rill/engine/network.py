@@ -633,14 +633,14 @@ class Graph(object):
             definition['inports'][name] = {
                 'process': inport.component.get_name(),
                 'port': inport.name,
-                'metadata': self.inport_metadata.get(name, {})
+                'metadata': dict(self.inport_metadata.get(name, {}))
             }
 
         for (name, outport) in self.outports.items():
             definition['outports'][name] = {
                 'process': outport.component.get_name(),
                 'port': outport.name,
-                'metadata': self.outport_metadata.get(name, {})
+                'metadata': dict(self.outport_metadata.get(name, {}))
             }
 
         return definition
@@ -683,6 +683,8 @@ class Graph(object):
             if 'data' in connection['src']:
                 # static initializer
                 data = connection['src']['data']
+                if type(data)==OrderedDict:
+                    data=dict(data)
                 content = deserialize(data)
                 if not tgt.auto_receive:
                     content = Stream(content)
@@ -692,9 +694,15 @@ class Graph(object):
                 # connection
                 src = _port(connection['src'], 'out')
                 if 'cap' in connection.keys():
-                    graph.connect(src, tgt, connection_capacity=connection['cap'])
+                    if 'topics' in connection.keys():
+                        graph.connect(src, tgt, connection_capacity=connection['cap'], topics=connection['topics'])
+                    else:
+                        graph.connect(src, tgt, connection_capacity=connection['cap'])
                 else:
-                    graph.connect(src, tgt)
+                    if 'topics' in connection.keys():
+                        graph.connect(src, tgt, topics=connection['topics'])
+                    else:
+                        graph.connect(src, tgt)
 
         for (name, inport) in definition['inports'].items():
             graph.export(_port(inport, 'in'), name)

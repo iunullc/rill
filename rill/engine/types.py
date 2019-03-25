@@ -377,7 +377,7 @@ class SchematicsTypeHandler(TypeHandler):
 
 def serialize(obj):
     if isinstance(obj, collections.Mapping):
-        newobj = collections.OrderedDict()
+        newobj = {}
         for key, value in obj.items():
             newobj[key] = serialize(value)
         return newobj
@@ -405,7 +405,7 @@ def deserialize(data):
             print("deserializing", data['value'], handler.type_def)
             return handler.to_native(data['value'])
         else:
-            newobj = collections.OrderedDict()
+            newobj = {}
             for key, value in data.items():
                 newobj[key] = deserialize(value)
             return newobj

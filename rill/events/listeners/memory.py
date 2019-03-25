@@ -44,12 +44,15 @@ def fbp_edge(outport, inport, graph_id, default_capacity, node_label='node'):
         'src': fbp_port(outport, node_label),
         'tgt': fbp_port(inport, node_label)
     }
+
     conn = inport._connection
+    connection.update({'topics':conn.topics})
     cap = conn.capacity()
     if cap !=default_capacity:
         connection.update({'cap':conn.capacity()})
     # keyed on outport
     metadata = conn.metadata.get(outport, None)
+
     if metadata:
         connection['metadata'] = metadata
     if graph_id is not None:
